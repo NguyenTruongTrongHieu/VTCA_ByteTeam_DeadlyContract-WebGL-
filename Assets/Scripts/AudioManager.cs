@@ -11,15 +11,12 @@ public class AudioManager : MonoBehaviour
 
     [Header("Audio Clips")]
     [SerializeField] private AudioClip background;
+    [SerializeField] private AudioClip background2;
     [SerializeField] private AudioClip clickSound;
     [SerializeField] private AudioClip completeSound;
     [SerializeField] private AudioClip catchFood;
     [SerializeField] private AudioClip winSound;
     [SerializeField] private AudioClip loseSound;
-
-    public Slider MusicSlider;
-    public Slider SfxSlider;
-
 
     [Header("Volume Settings")]
     [Range(0, 1)] public float musicVolume = 0.5f;
@@ -40,21 +37,6 @@ public class AudioManager : MonoBehaviour
 
     private void Start()
     {
-
-        if (MusicSlider != null)
-        {
-            MusicSlider.value = musicVolume;
-            MusicSlider.onValueChanged.AddListener(SetMusicVolume);
-        }
-
-        if (SfxSlider != null)
-        {
-            SfxSlider.value = sfxVolume;
-            SfxSlider.onValueChanged.AddListener(SetSFXVolume);
-        }
-        backgroundMusicSource.volume = musicVolume;
-        sfxSource.volume = sfxVolume;
-
         PlayBackgroundMusic(background);
     }
 
@@ -74,6 +56,10 @@ public class AudioManager : MonoBehaviour
         if (clip == null) return;
         sfxSource.PlayOneShot(clip, sfxVolume);
     }
+
+    public void PlayBackground() => PlayBackgroundMusic(background);
+
+    public void PlayBackground2() => PlayBackgroundMusic(background2);
 
     public void PlayClickSound() => PlaySFX(clickSound);//
     

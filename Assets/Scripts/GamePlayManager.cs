@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using JetBrains.Annotations;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -93,6 +94,7 @@ public class GamePlayManager : MonoBehaviour
     [SerializeField] private Text textTotalHeart;
     [SerializeField] private Text textTitle;
     [SerializeField] private Text textButton;
+    [SerializeField] private Button menu;
 
     public Button tieptuc;
 
@@ -106,6 +108,7 @@ public class GamePlayManager : MonoBehaviour
         btnIDCard.onClick.AddListener(CheckIDCard);
         btnFood.onClick.AddListener(ChooseCookingGame);
         tieptuc.onClick.AddListener(tuiepyc);
+        menu.onClick.AddListener(ReturnMenu);
 
         // Puzzle size
         lstCrrItem = new List<GameObject>();
@@ -132,7 +135,7 @@ public class GamePlayManager : MonoBehaviour
         if (playMode == PlayMode.none)
         {
             // Start time
-            StartCountdownTime(60);
+            StartCountdownTime(120);
 
             // Grenerate customer
             SpawnCustomer();
@@ -141,6 +144,13 @@ public class GamePlayManager : MonoBehaviour
             playMode = PlayMode.playing;
             return;
         }
+    }
+
+    private void ReturnMenu()
+    {
+        Time.timeScale = 1;
+        SceneManager.LoadScene("MenuScene");
+        AudioManager.Instance.PlayClickSound();
     }
 
     private void LoseGame()
@@ -161,6 +171,7 @@ public class GamePlayManager : MonoBehaviour
     public void tuiepyc()
     {
         SceneManager.LoadScene("PlayScene");
+        AudioManager.Instance.PlayClickSound();
         Time.timeScale = 1;
     }
     public void GenerateCustomerAndItems()
@@ -258,18 +269,21 @@ public class GamePlayManager : MonoBehaviour
             case 3:
                 puzzle3.SetActive(true);
                 crrBorder = puzzle3;
+                GetCurrentBorder().ResetBorder();
                 textDollars.text = (int.Parse(textDollars.text) - 5).ToString();
                 break;
 
             case 4:
                 puzzle4.SetActive(true);
                 crrBorder = puzzle4;
+                GetCurrentBorder().ResetBorder();
                 textDollars.text = (int.Parse(textDollars.text) - 10).ToString();
                 break;
 
             case 5:
                 puzzle5.SetActive(true);
                 crrBorder = puzzle5;
+                GetCurrentBorder().ResetBorder();
                 textDollars.text = (int.Parse(textDollars.text) - 15).ToString();
                 break;
         }
@@ -297,11 +311,13 @@ public class GamePlayManager : MonoBehaviour
         if (customerRequire == "beer" && int.Parse(textIdAge.text.Substring(6)) >= 18)
         {
             AudioManager.Instance.PlayCompleteSound();
-            textDollars.text = (int.Parse(textDollars.text) + 50).ToString();
+            textDollars.text = (int.Parse(textDollars.text) + 50).ToString(); 
+            textHeart.text = Mathf.Min(int.Parse(textHeart.text) + 1, 100).ToString();
             SpawnCustomer();
         }
         else
         {
+            textDollars.text = (int.Parse(textDollars.text) + 50).ToString();
             textHeart.text = Mathf.Max(int.Parse(textHeart.text) - 10, 0).ToString();
             SpawnCustomer();
         }
@@ -312,7 +328,7 @@ public class GamePlayManager : MonoBehaviour
     {
         if (customerRequire == "beer" && int.Parse(textIdAge.text.Substring(6)) < 18)
         {
-            textHeart.text = Mathf.Min(int.Parse(textHeart.text) + 10, 100).ToString();
+            textHeart.text = Mathf.Min(int.Parse(textHeart.text) + 5, 100).ToString();
             SpawnCustomer();
         }
         else
@@ -344,10 +360,11 @@ public class GamePlayManager : MonoBehaviour
         if (customerRequire == "puzzle")
         {
             textDollars.text = (int.Parse(textDollars.text) + totalPrice).ToString();
+            textHeart.text = Mathf.Min(int.Parse(textHeart.text) + 1, 100).ToString();
 
             AudioManager.Instance.PlayCompleteSound();
         }
-        else
+        else//Chon sai yeu cau
         {
             textHeart.text = Mathf.Max(int.Parse(textHeart.text) - 10, 0).ToString();
         }
@@ -477,6 +494,7 @@ public class GamePlayManager : MonoBehaviour
 
         float randomX = Random.Range(-273f, 273f);
         spawnedItem.transform.localPosition = new Vector3(randomX, 0, 0);
+        spawnedItem.gameObject.GetComponent<Rigidbody2D>().gravityScale = Random.Range(100f, 300f);
     }
 
     public void FinishCooking()
@@ -484,15 +502,17 @@ public class GamePlayManager : MonoBehaviour
         if (customerRequire == "hamburger" && panController.countItem == 10)
         {
             AudioManager.Instance.PlayCompleteSound();
-            textDollars.text = (int.Parse(textDollars.text) + 80).ToString();
+            textDollars.text = (int.Parse(textDollars.text) + 50).ToString();
+            textHeart.text = Mathf.Min(int.Parse(textHeart.text) + 5, 100).ToString();
+
             SpawnCustomer();
         }
-        else if(customerRequire == "hamburger" && panController.countItem < 10)
+        else if(customerRequire == "hamburger" && panController.countItem < 10)//Khong dat yeu cau
         {
-            textHeart.text = Mathf.Max(int.Parse(textHeart.text) - 10, 0).ToString();
+            textHeart.text = Mathf.Max(int.Parse(textHeart.text) - 5, 0).ToString();
             SpawnCustomer();
         }
-        else
+        else//Chon sai yeu cau
         {
             textHeart.text = Mathf.Max(int.Parse(textHeart.text) - 10, 0).ToString();
             SpawnCustomer();

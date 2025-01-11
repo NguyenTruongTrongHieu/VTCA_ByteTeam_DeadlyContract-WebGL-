@@ -13,6 +13,9 @@ public class MenuManager : MonoBehaviour
     public Button trve;
     public GameObject plan;
 
+    [SerializeField] private Slider musicSlider;
+    [SerializeField] private Slider sfxSlider;
+
     private void Start()
     {
         btnStart.onClick.AddListener(StartGame);
@@ -20,6 +23,22 @@ public class MenuManager : MonoBehaviour
         btnExit.onClick.AddListener(ExitGame);
         trve.onClick.AddListener(trove);
         plan.SetActive(false);
+        //AudioManager.Instance.PlayBackground();
+
+        //Kiem tra 2 slider chinh am luong co null khong
+        if (musicSlider != null)
+        {
+            musicSlider.value = AudioManager.Instance.musicVolume;
+            musicSlider.onValueChanged.AddListener(AudioManager.Instance.SetMusicVolume);
+        }
+
+        if (sfxSlider != null)
+        {
+            sfxSlider.value = AudioManager.Instance.sfxVolume;
+            sfxSlider.onValueChanged.AddListener(AudioManager.Instance.SetSFXVolume);
+        }
+
+        AudioManager.Instance.UpdateVolume();
     }
 
     public void StartGame()
@@ -44,6 +63,7 @@ public class MenuManager : MonoBehaviour
     }
     public void trove()
     {
+        AudioManager.Instance.PlayClickSound();
         plan.SetActive(false);
     }
 }

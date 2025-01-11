@@ -26,6 +26,8 @@ public class login : MonoBehaviour
             yield return null;
 
         }
+
+        //AudioManager.Instance.PlayBackground2();
         SceneManager.LoadScene("PlayScene");
     }
 }
